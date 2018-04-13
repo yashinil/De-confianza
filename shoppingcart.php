@@ -27,6 +27,7 @@ $result=mysqli_query($conn,$query);
 
 		<section id="cart"> 
 <?php
+$amount=0;
 while(@$row=mysqli_fetch_array($result))
 {
   $image=$row['item_image'];
@@ -35,11 +36,14 @@ while(@$row=mysqli_fetch_array($result))
   $result1=mysqli_query($conn,$query1);
 while(@$row1=mysqli_fetch_array($result1))
 {
+	
 	$img=$row1['image'];
 	$name=$row1['name'];
   $desc=$row1['description'];
   $price=$row1['price'];
   $stock=$row1['stock'];
+  $amount=$amount+$price;
+  
   echo"
 			<article class='product'>
 				<header>
@@ -82,13 +86,13 @@ while(@$row1=mysqli_fetch_array($result1))
 		<div class="container clearfix">
 
 			<div class="left">
-				<h2 class="subtotal">Subtotal: <span>0000</span>Rs</h2>
-				<h3 class="tax">Taxes (5%): <span>0000</span>Rs</h3>
+				<h2 class="subtotal">Subtotal: <span><?php echo $amount; ?></span>Rs</h2>
+				<h3 class="tax">Taxes (5%): <span><?php $tax=$amount*5/100; echo $tax;?></span>Rs</h3>
 				<h3 class="shipping">Shipping: <span>10.00</span>Rs</h3>
 			</div>
 
 			<div class="right">
-				<h1 class="total">Total: <span>0000</span>Rs</h1>
+				<h1 class="total">Total: <span><?php echo $amount+$tax+10;?></span>Rs</h1>
 				<a href="first.php"><input type="button" value="Checkout" class="btn" onclick="myfunction();"></a>
 				<a href="index.php"><input type="button" class="btn" value="Continue shopping!"></a>
 				<a href="logout.php"><input type="button" class="btn" value="LOGOUT"></a>	
@@ -100,7 +104,18 @@ while(@$row1=mysqli_fetch_array($result1))
     <script src="js/indexcart.js"></script>
     <script type="text/javascript">
     	function myfunction(){
+    		var username=<?php echo $_SESSION['customer'];?>;
     		alert("Thank You For Shopping with Us.");
+    		$.ajax({
+        	url: 'cart.php',
+        	type: 'POST',
+        	data: {
+        		check: "selected",
+        		username=username,
+        	}
+    	}).done(function(data){
+    		alert(data);
+    	});
     	}
     </script>
 
